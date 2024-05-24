@@ -1,4 +1,5 @@
 function gameBoard(){
+    const win = 3;
     const rows = 3;
     const columns = 3;
     const board = [];
@@ -12,6 +13,8 @@ function gameBoard(){
     }
 
     const getBoard = () => board;
+    const getWin = () => win;
+    const getColumn = () => columns;
 
     // Choosing a cell and adding the corresponding value to it (1 or 2)
     function chooseCell(row, column, player){
@@ -28,7 +31,7 @@ function gameBoard(){
         console.log(boardCells);
     };
 
-    return {getBoard, chooseCell, printBoard};
+    return {getBoard, getWin, getColumn, chooseCell, printBoard};
 }
 
 // This is the cell with an initial value of 0 it is added to the board's cells.
@@ -47,6 +50,8 @@ function Cell(){
 function gameController(playerOneName = "Player One", playerTwoName = "Player Two"){
     
     const board = gameBoard();
+    const collectToWin = board.getWin();
+    const columns = board.getColumn();
 
     const getBoard = () => board.getBoard();
     const players = [
@@ -76,30 +81,32 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
     }
 
     function playRound(row, column){
-        // To ensure that there are no actions if a player click on an occupied tile.
+        // To ensure that there are no actions if a player click on an occupied tile. The return value is 1.
         let returnValue = board.chooseCell(row,column,getActivePlayer().value);
         if (returnValue === 1) return;
 
         // Check if it is a win
-        //TO DO...
-        checkWin(players[0]);
-
+        if (checkWin(activePlayer)){
+            console.log(`${activePlayer.name} Win!`);
+            return;
+        }
+        
         switchPlayerTurn();
         printNewRound();
+
     }
 
     function checkWin(player){
         const checkArray = checkPlayerValues(player);
-        console.log(checkArray);
 
-        // I might eliminate the magic number 3
-        if (checkArray.length < 3) return false;
+        // CollectToWin : How many to collect to WIN
+        if (checkArray.length < collectToWin) return false;
         // Check Horizontally
-        if (checkHorizontally(checkArray)) return true;
+        if (checkHorizontally(checkArray, collectToWin)) return true;
         // Check Vertically
-        if (checkVertically(checkArray)) return true;
+        if (checkVertically(checkArray, collectToWin)) return true;
         // Check Diagonally
-        if (checkDiagonally(checkArray)) return true;
+        if (checkDiagonally(checkArray, collectToWin)) return true;
 
         return false;
         
@@ -116,91 +123,140 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
                 }
             });
         });
-
+        console.log(playerPositions);
         return playerPositions;
     }
 
-    function checkHorizontally(checkArray){
-        // Step1 - Check if the first elements are the same
-        const iIndex = checkArray[0][0];
-        for (let i = 0; i < checkArray.length; i++){
-            if (iIndex !== checkArray[i][0]){
-                return false;
+    function checkHorizontally(checkArray, collectToWin){
+        const sortedArray = checkArray.sort();
+        let count = 0;
+        for (let i = 0; i < sortedArray.length - 1; i++){
+            // They are in the same row
+            if (sortedArray[i][0] === sortedArray[i + 1][0]){
+                // They are next to each other
+                if(sortedArray[i + 1][1] - sortedArray[i][1] === 1){
+                    count++;
+                    if (count >= collectToWin - 1){
+                        console.log("Horizontal");
+                        return true;
+                    } 
+                } else count = 0;
+            }else count = 0;
+        }
+        return false;
+    }
+
+    function checkVertically(checkArray, collectToWin){
+        // Swap array elements
+        const newCheckArray = checkArray.map((arr) => [arr[1], arr[0]]);
+        const sortedArray = newCheckArray.sort();
+    
+        let count = 0;
+
+        for (let i = 0; i < sortedArray.length - 1; i++){
+            // They are in the same row
+            if (sortedArray[i][0] === sortedArray[i + 1][0]){
+                // They are next to each other
+                if(sortedArray[i + 1][1] - sortedArray[i][1] === 1){
+                    count++;
+                } else count = 0;
+                if (count >= collectToWin - 1){
+                    console.log("Vertical");
+                    return true;
+                } 
+            }else count = 0;
+        }
+        return false;
+    }
+
+    function checkDiagonally(checkArray, collectToWin){
+        
+        const oneDimensionArray = checkArray.map(([i, j]) => i * columns + j);
+        console.log(oneDimensionArray);
+        // Top left -> bottom right
+        const stepLR = columns + 1;
+
+        for (let i = 0; i < oneDimensionArray.length; i++){
+            let count = 0;
+            let num = oneDimensionArray[i];
+            for (let i = 0; i < collectToWin - 1; i++){
+               if (oneDimensionArray.includes(num + (i + 1) * stepLR)) count++;
+               if (count >= collectToWin - 1){
+                console.log("Top left -> bottom right");
+                return true;
+                } 
             }
         }
 
-        // Step2 - Extract the jIndexes
-        const jIndexes = checkArray.map(obj => obj[1])
-        
+        // Top right -> bottom left
+        const stepRL = columns - 1;
 
-        // Step3 - Sort the jIndexes
-        jIndexes.sort((a, b) => a - b);
-
-        // Step 4 - Check if the sorted jIndexes are consecutive
-        for (let i = 0; i < jIndexes.length - 1; i++) {
-        if (jIndexes[i] + 1 !== jIndexes[i + 1]) {
-            return false;
-        }
-        }
-        console.log("horizontal");
-        return true;
-    }
-
-    function checkVertically(checkArray){
-        // Step1 - Check if the second elements are the same
-        const jIndex = checkArray[0][1];
-        for (let i = 0; i < checkArray.length; i++){
-            if (jIndex !== checkArray[i][1]){
-                return false;
+        for (let i = 0; i < oneDimensionArray.length; i++){
+            let count = 0;
+            let num = oneDimensionArray[i];
+            for (let i = 0; i < collectToWin - 1; i++){
+               if (oneDimensionArray.includes(num + (i + 1) * stepRL)) count++;
+               if (count >= collectToWin - 1){
+                console.log("Top right -> bottom left");
+                return true;
+                } 
             }
         }
 
-        // Step2 - Extract the iIndexes
-        const iIndexes = checkArray.map(obj => obj[0])
-        
-
-        // Step3 - Sort the iIndexes
-        iIndexes.sort((a, b) => a - b);
-
-        // Step 4 - Check if the sorted iIndexes are consecutive
-        for (let i = 0; i < iIndexes.length - 1; i++) {
-        if (iIndexes[i] + 1 !== iIndexes[i + 1]) {
-            return false;
-        }
-        }
-        console.log("vertical");
-        return true;
-    }
-
-    function checkDiagonally(checkArray){
-        // Step1 - Extract the iIndexes and jIndexes
-        const iIndexes = checkArray.map(obj => obj[0])
-
-        // Step2 - Sort the iIndexes and jIndexes
-        iIndexes.sort((a, b) => a - b);
-        jIndexes.sort((a, b) => a - b);
-
-        // Step 3 - Check if the sorted iIndexes and jIndexes are consecutive
-        for (let i = 0; i < iIndexes.length - 1; i++) {
-        if (iIndexes[i] + 1 !== iIndexes[i + 1]) {
-            return false;
-        }
-        }
-        console.log("diagonal");
-        return true;
     }
 
     return {playRound, getActivePlayer, getBoard}
 
 }
 
-const game = gameController();
+function screenController(){
+    const game = gameController();
+    const playerTurnDiv = document.querySelector('.turn');
+    const boardDiv = document.querySelector(".board");
 
-game.playRound(0,1);
-game.playRound(2,1);
+    function updateScreen () {
+        // Clear the board
+        boardDiv.textContent = "";
+    
+        // Get the newest version of the board and player turn
+        const board = game.getBoard();
+        const activePlayer = game.getActivePlayer();
+    
+        // Display player's turn
+        playerTurnDiv.textContent = `${activePlayer.name}'s turn...`
+    
+        // Render board buttons
+        board.forEach((row, i) => {
+          row.forEach((cell, j) => {
+            // Anything clickable should be a button!!
+            const cellButton = document.createElement("button");
+            cellButton.classList.add("cell");
+            // Create a data attribute to identify the column
+            // This makes it easier to pass into our `playRound` function 
+            cellButton.dataset.row = i;
+            cellButton.dataset.column = j;
+            cellButton.textContent = cell.getValue();
+            boardDiv.appendChild(cellButton);
+          })
+        })
+    }
 
-game.playRound(1,0);
-game.playRound(1,2);
+    // Add event listener for the board
+    function clickHandlerBoard(e) {
+        const selectedCellRow = e.target.dataset.row;
+        const selectedCellColumn = e.target.dataset.column;
+        // Make sure I've clicked a cell and not the gaps in between
+        if (!selectedCellRow) return;
+    
+        game.playRound(selectedCellRow, selectedCellColumn);
+        updateScreen();
+  }
+  boardDiv.addEventListener("click", clickHandlerBoard);
 
-game.playRound(2,2);
+  // Initial render
+  updateScreen();
+}
+
+screenController();
+
 
