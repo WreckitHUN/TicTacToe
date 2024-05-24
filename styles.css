@@ -1,3 +1,10 @@
+:root{
+
+  --background-top: #0077b6;
+  --background-bottom: #00b4d8;
+  --body-color: #00b4d8;
+}
+
 *, *::after, *::before{
     box-sizing: border-box;
 }
@@ -31,10 +38,13 @@ p{
 
 
 body{
-    height: 100dvh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  color: var(--body-color);
+  background-image: url(assets/bg.png), linear-gradient(to bottom, var(--background-top) 0%, var(--background-bottom) 100%);
+  background-size: 150px, cover;
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 
@@ -44,19 +54,29 @@ body{
     width: 500px;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    border: 1px solid black;
-    gap: 2px;
-    padding: 2px;
-    background-color: yellow;
+    
+    gap: 20px;
+    padding: 20px;   
   }
   
-  .cell {
+.cell {
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     font-size: 2rem;
-    border: 1px solid grey;
-    background: lightyellow;
+    outline: none;
+    border: none;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.3);
     cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .player1{
+    background: dodgerblue;
+  }
+
+  .player2{
+    background: tomato;
   }

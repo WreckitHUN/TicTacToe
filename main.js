@@ -216,6 +216,7 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
 
 function screenController(){
     const game = gameController();
+    
     const rows = game.getRow();
     const columns = game.getColumn();
 
@@ -232,8 +233,8 @@ function screenController(){
     
         // Get the newest version of the board and player turn
         const board = game.getBoard();
+        
         const activePlayer = game.getActivePlayer();
-    
         // Display player's turn
         playerTurnDiv.textContent = `${activePlayer.name}'s turn...`
     
@@ -247,7 +248,8 @@ function screenController(){
             // This makes it easier to pass into our `playRound` function 
             cellButton.dataset.row = i;
             cellButton.dataset.column = j;
-            cellButton.textContent = cell.getValue();
+            //cellButton.textContent = cell.getValue();
+            cellButton.classList.add(`player${cell.getValue()}`);
             boardDiv.appendChild(cellButton);
           })
         })
@@ -255,11 +257,11 @@ function screenController(){
 
     // Add event listener for the board
     function clickHandlerBoard(e) {
-        const selectedCellRow = e.target.dataset.row;
-        const selectedCellColumn = e.target.dataset.column;
+        const cell = e.target;
+        const selectedCellRow = cell.dataset.row;
+        const selectedCellColumn = cell.dataset.column;
         // Make sure I've clicked a cell and not the gaps in between
         if (!selectedCellRow) return;
-    
         game.playRound(selectedCellRow, selectedCellColumn);
         updateScreen();
   }
