@@ -15,6 +15,7 @@ function gameBoard(){
     const getBoard = () => board;
     const getWin = () => win;
     const getColumn = () => columns;
+    const getRow = () => rows;
 
     // Choosing a cell and adding the corresponding value to it (1 or 2)
     function chooseCell(row, column, player){
@@ -31,7 +32,7 @@ function gameBoard(){
         console.log(boardCells);
     };
 
-    return {getBoard, getWin, getColumn, chooseCell, printBoard};
+    return {getBoard, getWin, getRow, getColumn, chooseCell, printBoard};
 }
 
 // This is the cell with an initial value of 0 it is added to the board's cells.
@@ -52,8 +53,12 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
     const board = gameBoard();
     const collectToWin = board.getWin();
     const columns = board.getColumn();
+    const rows = board.getRow();
 
     const getBoard = () => board.getBoard();
+    const getColumn = () => columns;
+    const getRow = () => rows;
+
     const players = [
         {
             name: playerOneName,
@@ -205,14 +210,21 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
 
     }
 
-    return {playRound, getActivePlayer, getBoard}
+    return {playRound, getActivePlayer, getBoard, getColumn, getRow}
 
 }
 
 function screenController(){
     const game = gameController();
+    const rows = game.getRow();
+    const columns = game.getColumn();
+
     const playerTurnDiv = document.querySelector('.turn');
     const boardDiv = document.querySelector(".board");
+
+    // Create the corresponding grid
+    boardDiv.style.gridTemplateRows = `repeat(${rows}, 1fr)`
+    boardDiv.style.gridTemplateColumns = `repeat(${columns}, 1fr)`
 
     function updateScreen () {
         // Clear the board
