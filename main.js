@@ -93,7 +93,7 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
         // Check if it is a win
         if (checkWin(activePlayer)){
             console.log(`${activePlayer.name} Win!`);
-            return;
+            location.reload();
         }
         
         switchPlayerTurn();
@@ -215,62 +215,87 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
 }
 
 function screenController(){
-    const game = gameController();
-    
-    const rows = game.getRow();
-    const columns = game.getColumn();
+    // Open the modal 
+    const modal = document.querySelector(".modal");
+    modal.showModal();
 
-    const playerTurnDiv = document.querySelector('.turn');
-    const boardDiv = document.querySelector(".board");
+    // Get the information
+    const gameForm = document.querySelector("#gameForm");
+    gameForm.addEventListener('submit', handleFormSubmit);
 
-    // Create the corresponding grid
-    boardDiv.style.gridTemplateRows = `repeat(${rows}, 1fr)`
-    boardDiv.style.gridTemplateColumns = `repeat(${columns}, 1fr)`
+    function handleFormSubmit(event){
+        //event.preventDefault();
+        //modal.close();
+        // Here I will give the names
+        const p1Name = document.querySelector("#p1").value;
+        const p2Name = document.querySelector("#p2").value;
 
-    function updateScreen () {
-        // Clear the board
-        boardDiv.textContent = "";
-    
-        // Get the newest version of the board and player turn
-        const board = game.getBoard();
-        
+        const game = gameController(p1Name, p2Name);
+        // Clear the inputs
+        p1Name.textContent = "";
+        p2Name.textContent = "";
+
         const activePlayer = game.getActivePlayer();
-        // Display player's turn
-        playerTurnDiv.textContent = `${activePlayer.name}'s turn...`
-    
-        // Render board buttons
-        board.forEach((row, i) => {
-          row.forEach((cell, j) => {
-            // Anything clickable should be a button!!
-            const cellButton = document.createElement("button");
-            cellButton.classList.add("cell");
-            // Create a data attribute to identify the column
-            // This makes it easier to pass into our `playRound` function 
-            cellButton.dataset.row = i;
-            cellButton.dataset.column = j;
-            //cellButton.textContent = cell.getValue();
-            cellButton.classList.add(`player${cell.getValue()}`);
-            boardDiv.appendChild(cellButton);
-          })
-        })
+        
+        const rows = game.getRow();
+        const columns = game.getColumn();
+
+        const playerTurnDiv = document.querySelector('.turn');
+        const boardDiv = document.querySelector(".board");
+
+        // Create the corresponding grid
+        boardDiv.style.gridTemplateRows = `repeat(${rows}, 1fr)`
+        boardDiv.style.gridTemplateColumns = `repeat(${columns}, 1fr)`
+
+        function initialScreen() {
+            // Clear the board
+            boardDiv.textContent = "";
+            
+            // Get the newest version of the board and player turn
+            const board = game.getBoard();
+
+            // Display player's turn
+            playerTurnDiv.textContent = `${activePlayer.name}'s turn...` 
+            
+            // Render board buttons
+            board.forEach((row, i) => {
+            row.forEach((cell, j) => {
+                // Anything clickable should be a button!!
+                const cellButton = document.createElement("button");
+                cellButton.classList.add("cell");
+                // Create a data attribute to identify the column
+                // This makes it easier to pass into our `playRound` function 
+                cellButton.dataset.row = i;
+                cellButton.dataset.column = j;
+                boardDiv.appendChild(cellButton);
+            })
+            })
+        }
+
+        function updateScreen(cell){
+            const activePlayer = game.getActivePlayer();
+            // Display player's turn
+            playerTurnDiv.textContent = `${activePlayer.name}'s turn...`
+            cell.classList.add(`player${activePlayer.value === 1 ? 2 : 1}`);
+        }
+
+        // Add event listener for the board
+        function clickHandlerBoard(e) {
+            const cell = e.target;
+            const selectedCellRow = cell.dataset.row;
+            const selectedCellColumn = cell.dataset.column;
+            // Make sure I've clicked a cell and not the gaps in between
+            if (!selectedCellRow) return;
+            
+            game.playRound(selectedCellRow, selectedCellColumn);
+            updateScreen(cell);
+            
     }
-
-    // Add event listener for the board
-    function clickHandlerBoard(e) {
-        const cell = e.target;
-        const selectedCellRow = cell.dataset.row;
-        const selectedCellColumn = cell.dataset.column;
-        // Make sure I've clicked a cell and not the gaps in between
-        if (!selectedCellRow) return;
-        game.playRound(selectedCellRow, selectedCellColumn);
-        updateScreen();
-  }
-  boardDiv.addEventListener("click", clickHandlerBoard);
-
-  // Initial render
-  updateScreen();
+    boardDiv.addEventListener("click", clickHandlerBoard);
+    // Initial render
+    initialScreen();
 }
-
+}
 screenController();
 
 

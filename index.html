@@ -11,11 +11,29 @@
     />
     <link rel="stylesheet" href="normalize.css" />
     <link rel="stylesheet" href="styles.css" />
-    <title>Document</title>
+    <title>Document1</title>
   </head>
   <body>
+    <dialog class="modal">
+      <div class="modalContainer">
+        <h1>TicTacToe</h1>
+        <form autocomplete="off" method="dialog" id="gameForm">
+          <div class="playerName">
+            <div class="playerOne">
+              <p>Player One's name:</p>
+              <input type="text" id="p1" name="p1" placeholder="Otto..." required />
+            </div>
+            <div class="playerTwo">
+              <p>Player Two's name:</p>
+              <input type="text" id="p2" name="p2" placeholder="Susan..." required />
+            </div>
+          </div>
+          <button class="btn" type="submit" id="start">START</button>
+        </form>
+      </div>
+    </dialog>
     <div class="container">
-      <h1 class="turn"></h1>
+      <h2 class="turn"></h2>
       <div class="board"></div>
     </div>
     <script src="main.js"></script>

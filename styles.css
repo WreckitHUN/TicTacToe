@@ -2,7 +2,7 @@
 
   --background-top: #0077b6;
   --background-bottom: #00b4d8;
-  --body-color: #00b4d8;
+  --body-color: white;
 }
 
 *, *::after, *::before{
@@ -47,6 +47,11 @@ body{
   align-items: center;
 }
 
+.container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .board {
     display: grid;
@@ -70,13 +75,77 @@ body{
     border-radius: 20px;
     background-color: rgba(255, 255, 255, 0.3);
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.5s;
   }
 
   .player1{
-    background: dodgerblue;
+    background: #03045e;
+   
   }
 
   .player2{
-    background: tomato;
+    background: #e63946;
   }
+
+  /* Modal */
+
+  .modal{
+    padding: 40px;
+    border: none;
+    border-radius: 20px;
+  }
+
+  .modalContainer{
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  ::backdrop{
+    background: var(--background-top);
+    opacity: 0.6;
+    
+}
+
+.playerName{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#gameForm{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+}
+
+input{
+  margin-top: 5px;
+  background: #ccc;
+  outline: 0;
+  border-radius: 10px;
+  padding: 1rem 2rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn{
+  background: #80ed99;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 1rem 2rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn:hover{
+  background: #2a9d8f;
+}
+
+
+
+
